@@ -38,13 +38,13 @@ function executeScript() {
     }
 
     async function handleQuestions() {
-        var questions = document.querySelectorAll('div.card.mb-4, div.card.mb-6');
+        var questions = document.querySelectorAll('div.card.mb-4, div.card.mb-6, div.custom-scrollbar > div');
         if (questions.length > 0) {
             questions.forEach(question => {
                 var questionRadios = question.querySelectorAll('input[type="radio"].hidden');
                 if (questionRadios.length > 0) {
                     var selected = questionRadios[Math.floor(Math.random() * questionRadios.length)];
-                    var span = selected.parentElement.querySelector('span.text-neutral-80');
+                    var span = selected.parentElement.querySelector('span.text-neutral-80, span.font-bold');
                     if (span) {
                         updateStatus("Sélectionner une réponse aléatoire pour la question");
                         span.click();
@@ -54,6 +54,15 @@ function executeScript() {
 
             var waitTime = questions.length * (Math.random() * 30 * 1000 + 60 * 1000); // Entre 1 minute et 1 minute 30 secondes par question
             await waitFor(waitTime);
+
+            // Vérifier si on a un bouton "Suivant"
+            var nextButton = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Suivant'));
+            if (nextButton) {
+                updateStatus("Cliquer sur 'Suivant'");
+                nextButton.click();
+                setTimeout(executeScript, 2000);  // Attendre 2 secondes pour charger la prochaine page de questions
+                return;
+            }
 
             // Vérifier si on a un bouton "Valider"
             var validateButton = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Valider'));
