@@ -54,6 +54,26 @@ function executeScript() {
         });
     }
 
+    function removeIrrelevantActivities() {
+        // Sélectionner tous les boutons d'activité potentiels
+        const activityButtons = document.querySelectorAll('button.flex.flex-col.items-center.group.col-span-4.lg\\:col-span-3.card-hover[type="button"]');
+
+        activityButtons.forEach(button => {
+            // Vérifier si l'activité semble être une leçon non pertinente
+            const img = button.querySelector('img');
+            const classList = button.classList.toString();
+            if (
+                (img && (img.src.includes('vocabulary') || img.src.includes('grammar') || img.src.includes('language-functions'))) || 
+                classList.includes('bg-vocabulary') || 
+                classList.includes('bg-grammar') || 
+                classList.includes('bg-language-functions')
+            ) {
+                updateStatus("Suppression d'une leçon non pertinente");
+                button.remove(); // Supprimer la leçon non pertinente
+            }
+        });
+    }
+
     async function handleQuestions() {
         // Chercher toutes les questions sur la page
         const questions = document.querySelectorAll('div.card.mb-4, div.card.mb-6');
@@ -130,6 +150,9 @@ function executeScript() {
         setTimeout(executeScript, 2000);  // Attendre 2 secondes pour charger la prochaine page
         return;
     }
+
+    // Supprimer les leçons non pertinentes avant de cliquer sur les activités
+    removeIrrelevantActivities();
 
     // Cliquer sur la première activité non terminée
     const activityButtons = document.querySelectorAll('button.flex.flex-col.items-center.group.col-span-4.lg\\:col-span-3.card-hover[type="button"]');
