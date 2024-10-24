@@ -152,20 +152,42 @@ function executeScript() {
     removeIrrelevantActivities();
 
     const activityButtons = document.querySelectorAll('button.flex.flex-col.items-center.group.col-span-4.lg\\:col-span-3.card-hover[type="button"]');
+    let foundIncompleteActivity = false;
+
     for (let button of activityButtons) {
         if (!button.querySelector('.fa-check')) {
             updateStatus("Cliquer sur une activité non terminée");
             button.click();
             isProcessing = false;
             setTimeout(executeScript, 2000);
+            foundIncompleteActivity = true;
             return;
         }
+    }
+
+    if (!foundIncompleteActivity && activityButtons.length > 0) {
+        // Toutes les activités sont terminées, en choisir une au hasard pour la recommencer
+        const randomButton = activityButtons[Math.floor(Math.random() * activityButtons.length)];
+        updateStatus("Toutes les activités sont terminées. Recommencer une activité aléatoire.");
+        randomButton.click();
+        isProcessing = false;
+        setTimeout(executeScript, 2000);
+        return;
     }
 
     const startButton = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Démarrer'));
     if (startButton) {
         updateStatus("Cliquer sur 'Démarrer'");
         startButton.click();
+        isProcessing = false;
+        setTimeout(executeScript, 2000);
+        return;
+    }
+
+    const replayButton = Array.from(document.querySelectorAll('a')).find(btn => btn.textContent.includes("Rejouer l'entraînement"));
+    if (replayButton) {
+        updateStatus("Cliquer sur 'Rejouer l'entraînement'");
+        replayButton.click();
         isProcessing = false;
         setTimeout(executeScript, 2000);
         return;
